@@ -41,18 +41,24 @@ func setupMountsForContainer(container *Container) error {
 		{container.ResolvConfPath, "/etc/resolv.conf", false, true},
 	}
 
-        cRootUid, err := utils.ContainerRootUid()
-        if err != nil {
-                return err
-        }
-        // Let root in the container own container.root
-        if err := os.Chown(container.root, int(cRootUid), int(cRootUid)); err != nil {
-                return err
-        }
+        // Let root in the container own container.root and
+	// container.RootfsPath
+	if container.Config.MapRoot {
+		cRootUid, err := utils.ContainerRootUid()
+		if err != nil {
+			return err
+		}
+		if err := os.Chown(container.root, int(cRootUid), int(cRootUid)); err != nil {
+			return err
+		}
+		if err := os.Chown(container.RootfsPath(), int(cRootUid), int(cRootUid)); err != nil {
+			return err
+		}
+	}
 
-	// Remap UID 0 files in the image to container root
-	if container.Config.XlateUids {
-		if err := utils.XlateUids(container.RootfsPath()); err != nil {
+	// Remap UIDs of the image
+	if container.Config.XlateUids || container.Config.InvXlateUids {
+		if err := utils.XlateUids(container.RootfsPath(), container.Config.InvXlateUids); err != nil {
 			return err
 		}
 	}
@@ -310,7 +316,7 @@ func initializeVolume(container *Container, volPath string, binds map[string]Bin
 		}
 		// Translate UIDs/GIDs of the empty new volumes and volumes copied from the image but not
 		// volumes imported from other containers or the host.
-		if err := utils.XlateUids(destination); err != nil {
+		if err := utils.XlateUids(destination, false); err != nil {
 			return err
 		}
 	}
