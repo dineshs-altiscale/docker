@@ -459,5 +459,5 @@ func (d *driver) generateEnvConfig(c *execdriver.Command) error {
 	p := path.Join(d.root, "containers", c.ID, "config.env")
 	c.Mounts = append(c.Mounts, execdriver.Mount{p, "/.dockerenv", false, true})
 
-	return ioutil.WriteFile(p, data, 0600)
+	return ioutil.WriteFile(p, data, 0644)
 }

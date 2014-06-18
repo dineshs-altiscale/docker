@@ -147,6 +147,12 @@ func (container *Container) getRootResourcePath(path string) string {
 	return filepath.Join(container.root, cleanPath)
 }
 
+type UidMap struct {
+        HostUid         uint32
+        ContainerUid    uint32
+        Size            uint32
+}
+
 func populateCommand(c *Container, env []string) error {
 	var (
 		en      *execdriver.Network
@@ -187,6 +193,24 @@ func populateCommand(c *Container, env []string) error {
 
 	// TODO: this can be removed after lxc-conf is fully deprecated
 	mergeLxcConfIntoOptions(c.hostConfig, context)
+
+        dockerRootUid, _ := utils.ContainerRootUid()
+        maxUid, _ := utils.HostMaxUid()
+
+        // Add 3 uid mappings: one to map docker-root on host to root in
+        // container and the other two to map all other UIDs one-to-one
+        uidMaps := [3]UidMap {
+                {1, 1, dockerRootUid - 1},
+                {dockerRootUid + 1, dockerRootUid + 1, maxUid - dockerRootUid - 1},
+                {dockerRootUid, 0, 1},
+        }
+
+	driverConfig := context["lxc"]
+        for _, uidMap := range uidMaps {
+                driverConfig = append(driverConfig, fmt.Sprintf("id_map = u %d %d %d", uidMap.ContainerUid, uidMap.HostUid, uidMap.Size))
+                driverConfig = append(driverConfig, fmt.Sprintf("id_map = g %d %d %d", uidMap.ContainerUid, uidMap.HostUid, uidMap.Size))
+        }
+	context["lxc"] = driverConfig
 
 	resources := &execdriver.Resources{
 		Memory:     c.Config.Memory,
