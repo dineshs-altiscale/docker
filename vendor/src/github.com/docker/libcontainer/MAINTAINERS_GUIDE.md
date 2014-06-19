@@ -1,9 +1,9 @@
-# The Docker Maintainer manual
+# The libcontainer Maintainers' Guide
 
 ## Introduction
 
 Dear maintainer. Thank you for investing the time and energy to help
-make Docker as useful as possible. Maintaining a project is difficult,
+make libcontainer as useful as possible. Maintaining a project is difficult,
 sometimes unrewarding work.  Sure, you will get to contribute cool
 features to the project. But most of your time will be spent reviewing,
 cleaning up, documenting, answering questions, justifying design
@@ -24,19 +24,19 @@ speak up!
 
 It is every maintainer's responsibility to:
 
-1. Expose a clear roadmap for improving their component.
-2. Deliver prompt feedback and decisions on pull requests.
-3. Be available to anyone with questions, bug reports, criticism etc.
+* 1) Expose a clear roadmap for improving their component.
+* 2) Deliver prompt feedback and decisions on pull requests.
+* 3) Be available to anyone with questions, bug reports, criticism etc.
   on their component. This includes IRC, GitHub requests and the mailing
   list.
-4. Make sure their component respects the philosophy, design and
+* 4) Make sure their component respects the philosophy, design and
   roadmap of the project.
 
 ## How are decisions made?
 
-Short answer: with pull requests to the docker repository.
+Short answer: with pull requests to the libcontainer repository.
 
-Docker is an open-source project with an open design philosophy. This
+libcontainer is an open-source project with an open design philosophy. This
 means that the repository is the source of truth for EVERY aspect of the
 project, including its philosophy, design, roadmap and APIs. *If it's
 part of the project, it's in the repo. It's in the repo, it's part of
@@ -47,7 +47,7 @@ repository. An implementation change is a change to the source code. An
 API change is a change to the API specification. A philosophy change is
 a change to the philosophy manifesto. And so on.
 
-All decisions affecting docker, big and small, follow the same 3 steps:
+All decisions affecting libcontainer, big and small, follow the same 3 steps:
 
 * Step 1: Open a pull request. Anyone can do this.
 
@@ -65,25 +65,20 @@ by anyone is denoted by adding a comment in the pull request: `LGTM`.
 However, only currently listed `MAINTAINERS` are counted towards the required
 majority.
 
-Docker follows the timeless, highly efficient and totally unfair system
-known as [Benevolent dictator for
-life](http://en.wikipedia.org/wiki/Benevolent_Dictator_for_Life), with
-yours truly, Solomon Hykes, in the role of BDFL. This means that all
-decisions are made by default by Solomon. Since making every decision
-myself would be highly un-scalable, in practice decisions are spread
-across multiple maintainers.
+libcontainer follows the timeless, highly efficient and totally unfair system
+known as [Benevolent dictator for life](http://en.wikipedia.org/wiki/Benevolent_Dictator_for_Life), with Michael Crosby in the role of BDFL.
+This means that all decisions are made by default by Michael. Since making
+every decision himself would be highly un-scalable, in practice decisions
+are spread across multiple maintainers.
 
-The relevant maintainers for a pull request can be worked out in 2 steps:
+The relevant maintainers for a pull request can be worked out in two steps:
 
 * Step 1: Determine the subdirectories affected by the pull request. This
-  might be `src/registry`, `docs/source/api`, or any other part of the repo.
+  might be `netlink/` and `security/`, or any other part of the repo.
 
 * Step 2: Find the `MAINTAINERS` file which affects this directory. If the
   directory itself does not have a `MAINTAINERS` file, work your way up
   the repo hierarchy until you find one.
-
-There is also a `hacks/getmaintainers.sh` script that will print out the 
-maintainers for a specified directory.
 
 ### I'm a maintainer, and I'm going on holiday
 
@@ -97,7 +92,7 @@ made through a pull request.
 
 ### Who assigns maintainers?
 
-Solomon has final `LGTM` approval for all pull requests to `MAINTAINERS` files.
+Michael has final `LGTM` approval for all pull requests to `MAINTAINERS` files.
 
 ### How is this process changed?
 
