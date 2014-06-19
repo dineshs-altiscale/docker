@@ -604,7 +604,7 @@ func (daemon *Daemon) newContainer(name string, config *runconfig.Config, img *i
 func (daemon *Daemon) createRootfs(container *Container, img *image.Image) error {
 	// Step 1: create the container directory.
 	// This doubles as a barrier to avoid race conditions.
-	if err := os.Mkdir(container.root, 0711); err != nil {
+	if err := os.Mkdir(container.root, 0710); err != nil {
 		return err
 	}
 	initID := fmt.Sprintf("%s-init", container.ID)
@@ -615,13 +615,9 @@ func (daemon *Daemon) createRootfs(container *Container, img *image.Image) error
 	if err != nil {
 		return err
 	}
-        containerRoot, err := utils.ContainerRootUid()
-        if err != nil {
-                return err
-        }
-        if err := os.Chown(initPath, int(containerRoot), int(containerRoot)); err != nil {
-                return err
-        }
+	if err := os.Chmod(initPath, 0755); err != nil {
+		return err
+	}
 	defer daemon.driver.Put(initID)
 
 	if err := graph.SetupInitLayer(initPath); err != nil {
@@ -776,12 +772,12 @@ func NewDaemonFromDirectory(config *daemonconfig.Config, eng *engine.Engine) (*D
 	}
 
 	// Create the root directory if it doesn't exists
-	if err := os.MkdirAll(config.Root, 0711); err != nil && !os.IsExist(err) {
+	if err := os.MkdirAll(config.Root, 0710); err != nil && !os.IsExist(err) {
 		return nil, err
 	}
-        // Change to 0711 in case it was already created 0700 by an earlier
+        // Change to 0710 in case it was already created 0700 by an earlier
         // Docker version.  MkdirAll doesn't fail if the dir already exists.
-        if err := os.Chmod(config.Root, 0711); err != nil {
+        if err := os.Chmod(config.Root, 0710); err != nil {
                 return nil, err
         }
 
@@ -797,10 +793,10 @@ func NewDaemonFromDirectory(config *daemonconfig.Config, eng *engine.Engine) (*D
 
 	daemonRepo := path.Join(config.Root, "containers")
 
-	if err := os.MkdirAll(daemonRepo, 0711); err != nil && !os.IsExist(err) {
+	if err := os.MkdirAll(daemonRepo, 0710); err != nil && !os.IsExist(err) {
 		return nil, err
 	}
-        if err := os.Chmod(daemonRepo, 0711); err != nil {
+        if err := os.Chmod(daemonRepo, 0710); err != nil {
                 return nil, err
         }
 
@@ -861,24 +857,17 @@ func NewDaemonFromDirectory(config *daemonconfig.Config, eng *engine.Engine) (*D
 
 	if sysInitPath != localCopy {
 		// When we find a suitable dockerinit binary (even if it's our local binary), we copy it into config.Root at localCopy for future use (so that the original can go away without that being a problem, for example during a package upgrade).
-		if err := os.Mkdir(path.Dir(localCopy), 0711); err != nil && !os.IsExist(err) {
+		if err := os.Mkdir(path.Dir(localCopy), 0710); err != nil && !os.IsExist(err) {
 			return nil, err
 		}
 		if _, err := utils.CopyFile(sysInitPath, localCopy); err != nil {
 			return nil, err
 		}
-                // Change to 0711 in case it was already created 0700 by an earlier Docker version
-                if err := os.Chmod(path.Dir(localCopy), 0711); err != nil {
+                // Change to 0710 in case it was already created 0700 by an earlier Docker version
+                if err := os.Chmod(path.Dir(localCopy), 0710); err != nil {
                         return nil, err
                 }
-                if err := os.Chmod(localCopy, 0711); err != nil {
-                        return nil, err
-                }
-                containerRoot, err := utils.ContainerRootUid()
-                if err != nil {
-                        return nil, err
-                }
-                if err := os.Chown(localCopy, int(containerRoot), int(containerRoot)); err != nil {
+                if err := os.Chmod(localCopy, 0710); err != nil {
                         return nil, err
                 }
 		sysInitPath = localCopy

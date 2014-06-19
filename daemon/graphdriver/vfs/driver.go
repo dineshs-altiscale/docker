@@ -22,10 +22,10 @@ func Init(home string, options []string) (graphdriver.Driver, error) {
 
 func (d *Driver) fixPermissions() error {
         dir := d.dir("id")
-        if err := os.Chmod(path.Dir(dir), 0711); err != nil && !os.IsNotExist(err) {
+        if err := os.Chmod(path.Dir(dir), 0710); err != nil && !os.IsNotExist(err) {
                 return err
         }
-        if err := os.Chmod(d.home, 0711); err != nil && !os.IsNotExist(err) {
+        if err := os.Chmod(d.home, 0710); err != nil && !os.IsNotExist(err) {
                 return err
         }
 
@@ -57,7 +57,7 @@ func copyDir(src, dst string) error {
 
 func (d *Driver) Create(id, parent string) error {
 	dir := d.dir(id)
-	if err := os.MkdirAll(path.Dir(dir), 0711); err != nil {
+	if err := os.MkdirAll(path.Dir(dir), 0710); err != nil {
 		return err
 	}
 	if err := os.Mkdir(dir, 0755); err != nil {
